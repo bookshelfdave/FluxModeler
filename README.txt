@@ -10,4 +10,4 @@ Shift-L will select an edge loop
 
 Spacebar deselects all
 
-I would like to convert this to WebGL + CoffeeScript (or maybe even Racket). 
+I would like to convert this to WebGL + CoffeeScript (or maybe even Racket + Whalesong). 
