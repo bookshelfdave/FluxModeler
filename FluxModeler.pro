@@ -1,5 +1,11 @@
 QT += opengl
-CONFIG += qt
+CONFIG += console
+
+INCLUDEPATH = c:/tools/python27/include
+win32:LIBS += c:/tools/python27/libs/libpython27.a
+
+QMAKE_CXXFLAGS_DEBUG += -Wno-write-strings
+QMAKE_CXXFLAGS_RELEASE += -Wno-write-strings
 
 HEADERS += \
     src/FluxObjParser.h \
@@ -16,7 +22,10 @@ HEADERS += \
     src/FluxModelOps.h \
     src/FluxOptions.h \
     src/FluxMath3d.h \
-    src/FluxGraphicsView.h
+    src/FluxGraphicsView.h \
+    src/FluxLib.h \
+    src/FluxGeomStatusBar.h \
+    src/FluxPythonIO.h
 
 SOURCES += \
     src/FluxObjParser.cpp \
@@ -33,7 +42,7 @@ SOURCES += \
     src/FluxModelOps.cpp \
     src/FluxOptions.cpp \
     src/FluxMath3d.cpp \
-    src/FluxGraphicsView.cpp
-
-OTHER_FILES += \
-    README.txt
+    src/FluxGraphicsView.cpp \
+    src/FluxLib.cpp \
+    src/FluxGeomStatusBar.cpp \    
+    src/FluxPythonIO.cpp

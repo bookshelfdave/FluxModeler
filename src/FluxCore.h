@@ -15,11 +15,6 @@ typedef unsigned int FaceIdType;
 typedef unsigned int ObjIdType;
 
 
-
-
-
-
-
 // point / vector all wrapped up in one
 class V3 {
 public:
@@ -38,15 +33,6 @@ public:
     QString asString();
 };
 
-
-class M4 {
-public:
-    M4() : x(0.0), y(0.0), z(0.0) {}
-    M4(double vx, double vy,double vz) : x(vx), y(vy), z(vz),w(1.0) {}
-    M4(V3 v) : x(v.x), y(v.y), z(v.z),w(1.0) {}
-    double x,y,z,w;
-};
-
 // vector with selection and id info. I suppose other stuff will go here too
 class Vert : public V3 {
 public:
@@ -58,11 +44,20 @@ public:
     void select();
     void deselect();
     VertIdType getId();
-
 private:
     VertIdType vid;
     bool selected;
 };
+
+
+class M4 {
+public:
+    M4() : x(0.0), y(0.0), z(0.0) {}
+    M4(double vx, double vy,double vz) : x(vx), y(vy), z(vz),w(1.0) {}
+    M4(V3 v) : x(v.x), y(v.y), z(v.z),w(1.0) {}
+    double x,y,z,w;
+};
+
 
 
 class Triangle {
@@ -141,6 +136,7 @@ public:
     Object3d* getParent();
     // TODO: should this be a pointer?
     V3 getCentroid();
+    V3 getNormal();
     bool isSelected();
     void select();
     void deselect();
@@ -158,7 +154,6 @@ private:
     static long GetPrevActive(long x, long vertexCount,const bool* active);
 
     Object3d* parent;
-
     QList<EdgeIdType> *edgeids;
     QList<Vert*> *verts;
     QList<Triangle*> *triangles;
@@ -182,7 +177,7 @@ public:
     HalfEdge*   pair;
     HalfEdge*   prev;
     HalfEdge*   next;
-
+    QString key;
     QString getDirectedEdgeId() {
         if(reversedEdge) {
             return Edge::makeEdgeName(normalizedEdge->getB(),normalizedEdge->getA());
@@ -221,7 +216,7 @@ public:
 
 class Object3d {
 public:
-    Object3d();
+    Object3d(int oid);
     ~Object3d();
 
     VertIdType addVert(float x, float y, float z);
@@ -241,6 +236,11 @@ public:
     void deselectAllVerts();
     void deselectAllEdges();
     void deselectAllFaces();
+
+    void addToPython();
+    void updatePython();
+
+    int getObjectId();
     //QSet<FaceIdType>* getFaceSelection();
     //QSet<EdgeIdType>* getEdgeSelection();
     //QSet<VertIdType>* getVertSelection();
@@ -253,7 +253,7 @@ private:
     QList<Vert*> *verts;
     QMap<QString,HalfEdge*> *halfEdges;
     BoundingBox3d* bb;
-
+    int objectId;
     //QSet<FaceIdType> *selectedFaces;
     //QSet<EdgeIdType> *selectedEdges;
     //QSet<VertIdType> *selectedVerts;

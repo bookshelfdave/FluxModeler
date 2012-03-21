@@ -4,12 +4,15 @@
 #include <QtGui>
 #include <QActionGroup>
 #include <QMenu>
+#include <QDockWidget>
 
 #include "FluxGLWidget.h"
 #include "FluxContext.h"
 #include "FluxCore.h"
 #include "FluxInputHandler.h"
 #include "FluxOptions.h"
+#include "FluxGeomStatusBar.h"
+#include "FluxPythonIO.h"
 
 FluxWindow::FluxWindow(Context* appCtx, QWidget* parent) :
     QMainWindow(parent), ctx(appCtx) {
@@ -23,7 +26,14 @@ FluxWindow::FluxWindow(Context* appCtx, QWidget* parent) :
     fluxGl->setSceneView(ctx->getScene()->getActiveSceneView());
     ctx->getScene()->setActiveGLWidget(fluxGl);
 
-    this->setCentralWidget(fluxGl);
+    this->setCentralWidget(fluxGl);    
+
+// MEMORY LEAK!
+//    QDockWidget *dock = new QDockWidget(tr("Status"), this);
+//    dock->setAllowedAreas(Qt::TopDockWidgetArea | Qt::RightDockWidgetArea);
+//    geomStatusBar = new GeomStatusBar(dock);
+//    dock->setWidget(geomStatusBar);
+//    addDockWidget(Qt::TopDockWidgetArea, dock);
 }
 
 FluxWindow::~FluxWindow() {
@@ -132,6 +142,8 @@ void FluxWindow::newScene() {
 
 void FluxWindow::openScene() {
     qDebug("Open Scene");
+    //menuAction(QString *param);
+    PythonIO::menuAction("flux.ui.FileActions","FileOpen","c:\\src\\grid.obj");
 }
 
 void FluxWindow::deselect() {

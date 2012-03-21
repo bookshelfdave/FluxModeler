@@ -5,6 +5,7 @@
 #include "FluxContext.h"
 
 class FluxGLWidget;
+class GeomStatusBar;
 
 class FluxWindow : public QMainWindow {
     Q_OBJECT
@@ -47,6 +48,7 @@ private:
     QMenu* selectMenu;
     QMenu* viewMenu;
 
+    GeomStatusBar* geomStatusBar;
     FluxGLWidget* fluxGl;
     Context* ctx;
     DISALLOW_COPY_AND_ASSIGN(FluxWindow);

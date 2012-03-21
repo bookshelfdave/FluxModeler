@@ -15,7 +15,7 @@ protected:
     InputState keyUpInputState;
     Qt::KeyboardModifiers keyModifiers;
     Qt::Key key;
-
+    QString pythonHandler;
 public:
     KeyboardEventHandler();
     virtual ~KeyboardEventHandler()=0;
@@ -24,7 +24,7 @@ public:
     Qt::KeyboardModifiers getKeyModifiers();
     Qt::Key getKey();
     virtual void keyPress( QKeyEvent* event,Context* ctx ) { }
-    virtual void keyRelease( QKeyEvent* event,Context* ctx ) { }
+    virtual void keyRelease( QKeyEvent* event,Context* ctx ) { }        
 
 private:
     DISALLOW_COPY_AND_ASSIGN(KeyboardEventHandler);

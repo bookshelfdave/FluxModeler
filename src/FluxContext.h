@@ -51,6 +51,13 @@ enum GeomManipMode {
     gmmScale
 };
 
+enum GeomManipAxis {
+    axisX,
+    axisY,
+    axisZ,
+    axisFree
+};
+
 
 class Scene {
 public:
@@ -64,6 +71,7 @@ public:
 
     void setActiveGLWidget(FluxGLWidget*);
     FluxGLWidget*  getActiveGLWidget();
+
 
 private:
     QList<Object3d*> sceneObjects;

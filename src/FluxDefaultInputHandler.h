@@ -149,6 +149,31 @@ private:
 };
 
 
+class PythonTestHandler : public KeyboardEventHandler {
+public:
+    PythonTestHandler();
+    ~PythonTestHandler();
+    void keyPress(QKeyEvent* event, Context* ctx);
+    void keyRelease(QKeyEvent* event, Context* ctx);
+private:
+    QPoint* lastPosition;
+    DISALLOW_COPY_AND_ASSIGN(PythonTestHandler);
+};
+
+
+
+class PythonMouseHandler: public MouseEventHandler {
+public:
+    PythonMouseHandler();
+    ~PythonMouseHandler();
+    void buttonUp(QMouseEvent* event,Context* ctx);
+    void buttonDown(QMouseEvent* event,Context* ctx);
+    void mouseMove(QMouseEvent* event,Context* ctx);
+    void mouseWheel(QWheelEvent* event,Context* ctx);
+private:
+    DISALLOW_COPY_AND_ASSIGN(PythonMouseHandler);
+};
+
 
 
 } // end namespace

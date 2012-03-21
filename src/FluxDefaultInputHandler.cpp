@@ -1,5 +1,7 @@
 #include "FluxDefaultInputHandler.h"
 
+#include "Python.h"
+
 #include <QList>
 #include <QSet>
 
@@ -20,6 +22,8 @@ DefaultInputHandler::DefaultInputHandler(Context* newCtx) : InputHandler(newCtx)
     this->installMouseHandler(new SelectionHandler());
     this->installMouseHandler(new GeomManipHandler());
 
+    this->installMouseHandler(new PythonMouseHandler());
+
     this->installKeyboardHandler(new DeselectHandler());
     this->installKeyboardHandler(new SplitFaceHandler());
     this->installKeyboardHandler(new SelectEdgeRingHandler());
@@ -28,7 +32,7 @@ DefaultInputHandler::DefaultInputHandler(Context* newCtx) : InputHandler(newCtx)
     this->installKeyboardHandler(new GeomTranslateHandler());
     this->installKeyboardHandler(new GeomRotateHandler());
     this->installKeyboardHandler(new GeomScaleHandler());
-
+    this->installKeyboardHandler(new PythonTestHandler());
 
 }
 
@@ -587,4 +591,116 @@ void GeomScaleHandler::keyPress(QKeyEvent* event, Context* ctx) {
 void GeomScaleHandler::keyRelease(QKeyEvent* event, Context* ctx) {
 }
 
+
+
+PythonTestHandler::PythonTestHandler() {
+    key = Qt::Key_P;
+    keyModifiers = Qt::NoModifier;
+    keyDownInputState=isSelect;
+    keyUpInputState=isSelect;
+    pythonHandler = QString("flux.ui.Test");
+}
+
+PythonTestHandler::~PythonTestHandler() {
+
+}
+
+void PythonTestHandler::keyPress(QKeyEvent* event, Context* ctx) {
+
+    PyObject *pName, *pModule, *pFunc, *pValue;
+    pName = PyString_FromString("flux.ui.Test");
+    pModule = PyImport_ImportModule("flux.ui.Test");
+    // is there a memory leak here?
+    pModule = PyImport_ReloadModule(pModule);
+    Py_DECREF(pName);
+
+
+    if (pModule != NULL) {
+        pFunc = PyObject_GetAttrString(pModule, "HandleKeyboard");
+        /* pFunc is a new reference */
+        if (pFunc && PyCallable_Check(pFunc)) {
+            pValue = PyObject_CallObject(pFunc, NULL);
+        }
+        if (pValue != NULL) {
+            //printf("Result of call: %ld\n", PyInt_AsLong(pValue));
+            Py_DECREF(pValue);
+        } else {
+            qDebug("Error:-(");
+            Py_DECREF(pFunc);
+            Py_DECREF(pModule);
+            PyErr_Print();
+        }
+       Py_XDECREF(pFunc);
+       Py_DECREF(pModule);
+    } else {
+        PyErr_Print();
+        qDebug("Bad module :-(");
+    }
+}
+
+void PythonTestHandler::keyRelease(QKeyEvent* event, Context* ctx) {
+
+}
+
+
+
+
+PythonMouseHandler::PythonMouseHandler() {
+    mouseDownInputState=isSelect;
+    keyModifiers = Qt::NoModifier;
+    mouseButtons = Qt::RightButton;
+    respondToMouseMove = true;
+}
+PythonMouseHandler::~PythonMouseHandler() {
+
+}
+
+void PythonMouseHandler::buttonUp(QMouseEvent* event,Context* ctx) {
+
+}
+
+void PythonMouseHandler::buttonDown(QMouseEvent* event,Context* ctx) {
+    PyObject *pName, *pModule, *pFunc, *pValue, *pArgs;
+    pName = PyString_FromString("flux.ui.Test");
+    pModule = PyImport_ImportModule("flux.ui.Test");
+    pModule = PyImport_ReloadModule(pModule);
+    Py_DECREF(pName);
+
+    if (pModule != NULL) {
+        pFunc = PyObject_GetAttrString(pModule, "HandleMouse");
+        /* pFunc is a new reference */
+        if (pFunc && PyCallable_Check(pFunc)) {
+            pArgs = PyTuple_New(2);
+            pValue = PyInt_FromLong((long)event->x());
+            PyTuple_SetItem(pArgs, 0, pValue);
+            pValue = PyInt_FromLong((long)event->y());
+            PyTuple_SetItem(pArgs, 1, pValue);
+            pValue = PyObject_CallObject(pFunc, pArgs);
+            Py_DECREF(pArgs);
+
+        }
+        if (pValue != NULL) {
+            //printf("Result of call: %ld\n", PyInt_AsLong(pValue));
+            Py_DECREF(pValue);
+        } else {
+            qDebug("Error:-(");
+            Py_DECREF(pFunc);
+            Py_DECREF(pModule);
+            PyErr_Print();
+        }
+       Py_XDECREF(pFunc);
+       Py_DECREF(pModule);
+    } else {
+        PyErr_Print();
+        qDebug("Bad module :-(");
+    }
+}
+
+void PythonMouseHandler::mouseMove(QMouseEvent* event,Context* ctx) {
+
+}
+
+void PythonMouseHandler::mouseWheel(QWheelEvent* event,Context* ctx) {
+
+}
 

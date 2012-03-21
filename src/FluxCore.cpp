@@ -1,4 +1,5 @@
 #include "FluxCore.h"
+#include <Python.h>
 #include <limits>
 #include <math.h>
 #include <QtGlobal>
@@ -415,6 +416,10 @@ V3 Face::getCentroid() {
     return centroid;
 }
 
+V3 Face::getNormal() {
+    return normal;
+}
+
 bool Face::isSelected() {
     return selected;
 }
@@ -457,7 +462,8 @@ bool BoundingBox3d::pointInBB(V3* point) {
 
 
 
-Object3d::Object3d() {
+Object3d::Object3d(int oid) {
+    objectId = oid;
     faces = new QList<Face*>();
     edges = new QList<Edge*>();
     edgemap = new QMap<QString,Edge*>();
@@ -588,7 +594,10 @@ void Object3d::initialBuild() {
             }
 
             //qDebug(QString("Pair %1 %2").arg(va).arg(vb).toAscii().data());
-            halfEdges->insert(Edge::makeEdgeName(va,vb),he);
+            QString key = Edge::makeEdgeName(va,vb);
+            he->key = key;
+            qDebug(key.toAscii().data());
+            halfEdges->insert(key,he);
             heList.append(he);
         }
 
@@ -617,14 +626,14 @@ void Object3d::initialBuild() {
         if(he->pair == 0) {
             QString peerId = Edge::makeEdgeName(he->getSecond(),he->getFirst());
             //QString peerId = edges->at(he->edge->getId())->getReversedEdge().getEdgeName();
-            qDebug(QString("Peer: %1").arg(peerId).toAscii().data());
+            //qDebug(QString("Peer: %1").arg(peerId).toAscii().data());
 
             if(halfEdges->contains(peerId)) {
                 HalfEdge* peer = (*halfEdges)[peerId];
                 he->pair = peer;
                 peer->pair = he;
             } else {
-                qDebug("No peer");
+                //qDebug("No peer");
             }
         }
     }
@@ -678,3 +687,80 @@ void Object3d::deselectAllFaces() {
 }
 
 
+void Object3d::addToPython() {
+    qDebug("Adding to Python...");
+    //PyRun_SimpleString("app.addSceneObject(0)\n");
+    PyRun_SimpleString("app.sceneObjects.append(Object3d(0))\n");
+    PyRun_SimpleString("so = app.sceneObjects[0]\n");
+    foreach(Vert *v, *verts) {
+        QString py = QString("so.verts.append(Vert(%1,%2,%3,%4,False))\n")
+                .arg(v->getId())
+                .arg(v->x)
+                .arg(v->y)
+                .arg(v->z);
+
+        PyRun_SimpleString(py.toAscii().constData());
+    }
+
+    foreach(Edge *e, *edges) {
+        QString py = QString("so.edges.append(Edge(%1,so.verts[%2],so.verts[%3],False))\n")
+                .arg(e->getId()).arg(e->getA()->getId()).arg(e->getB()->getId());
+        PyRun_SimpleString(py.toAscii().constData());
+    }
+
+    foreach(Face *f, *faces) {
+        QString py = QString("so.faces.append(Face(%1))\n")
+                .arg(f->getId());
+        PyRun_SimpleString(py.toAscii().constData());
+    }
+
+    QMapIterator<QString,HalfEdge*> i(*halfEdges);
+    while (i.hasNext()) {
+        i.next();
+        HalfEdge* he = i.value();
+        QString reversedVal;
+        if(he->reversedEdge) {
+            reversedVal=QString("True");
+        } else {
+            reversedVal=QString("False");
+        }
+        QString py = QString("so.halfEdges['%1'] = HalfEdge('%1',so.verts[%2],so.faces[%3],so.edges[%4],%5)\n")
+                .arg(he->key)
+                .arg(he->vert->getId())
+                .arg(he->face->getId())
+                .arg(he->normalizedEdge->getId())
+                .arg(reversedVal);
+        //vert,face,normalizedEdge,reversedEdge
+        PyRun_SimpleString(py.toAscii().constData());
+    }
+
+
+    // now setup the HalfEdge next, prev pointers
+    i.toFront();
+    while (i.hasNext()) {
+        i.next();
+        HalfEdge* he = i.value();
+        QString py1 = QString("so.halfEdges['%1'].prev = so.halfEdges['%2']")
+                .arg(he->key)
+                .arg(he->prev->key);
+        QString py2 = QString("so.halfEdges['%1'].pair = so.halfEdges['%2']")
+                .arg(he->key)
+                .arg(he->pair->key);
+        QString py3 = QString("so.halfEdges['%1'].next = so.halfEdges['%2']")
+                .arg(he->key)
+                .arg(he->next->key);
+        PyRun_SimpleString(py1.toAscii().constData());
+        PyRun_SimpleString(py2.toAscii().constData());
+        PyRun_SimpleString(py3.toAscii().constData());
+    }
+
+    qDebug("Added to Python :-)");
+}
+
+void Object3d::updatePython() {
+    // not implemented!
+}
+
+int Object3d::getObjectId() {
+    return objectId;
+}

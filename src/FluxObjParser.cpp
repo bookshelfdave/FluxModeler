@@ -13,7 +13,8 @@ Object3d* ObjParser::parseObject(QString s) {
     QString msg = "Parsing file " + s;
     qDebug(msg.toAscii().data());
     QFile* data = new QFile(s);
-    Object3d* so = new Object3d();
+    // only 1 object allowed right now
+    Object3d* so = new Object3d(0);
 
     if (data->open(QFile::ReadOnly)) {
         QTextStream stream(data);

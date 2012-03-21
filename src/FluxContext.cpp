@@ -1,10 +1,14 @@
 #include "FluxCore.h"
+
+#include <Python.h>
+
 #include "FluxContext.h"
 #include "FluxSceneRenderer.h"
 #include "FluxDefaultInputHandler.h"
 #include "FluxSceneRenderer.h"
 #include "FluxInputStateStack.h"
 #include "FluxOptions.h"
+
 
 Context::Context() {
     scene = new Scene();
@@ -56,7 +60,6 @@ Scene::~Scene() {
 
 void Scene::addSceneObject(Object3d* so) {
     sceneObjects.append(so);
-    qDebug("Setting active so");
     activeSceneObject = so;
 }
 
@@ -82,6 +85,7 @@ void Scene::setActiveGLWidget(FluxGLWidget* gl) {
 FluxGLWidget* Scene::getActiveGLWidget() {
     return activeGLWidget;
 }
+
 
 
 
