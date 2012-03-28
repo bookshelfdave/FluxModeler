@@ -1,5 +1,5 @@
-Some of the 3d modeler I was working on last year. C++ w/ old school OpenGL.
-
+Some of the 3d modeler I was working on last year. C++/Qt w/ old school OpenGL. This was mostly an exercise in collision 
+detection with verts/lines/faces/objects. 
 
 Ctrl-Left mouse rotates scene
 Ctrl-Right mouse drags scene
@@ -10,4 +10,4 @@ Shift-L will select an edge loop
 
 Spacebar deselects all
 
-I would like to convert this to WebGL + CoffeeScript (or maybe even Racket + Whalesong). 
+I would like to convert this to WebGL + CoffeeScript (hence the Flux3d project that I'll never start). 
