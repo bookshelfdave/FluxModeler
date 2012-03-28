@@ -11,3 +11,5 @@ Shift-L will select an edge loop
 Spacebar deselects all
 
 I would like to convert this to WebGL + CoffeeScript (hence the Flux3d project that I'll never start). 
+
+I also created a branch that includes Python scripting. But why bother: Qt includes Javascript for extensibility!
