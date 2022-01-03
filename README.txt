@@ -1,5 +1,5 @@
-Some of the 3d modeler I was working on last year. C++/Qt w/ old school OpenGL. This was mostly an exercise in collision 
-detection with verts/lines/faces/objects. 
+Some of the 3d modeler I was working on in 2010. C++/Qt w/ old school OpenGL. This was mostly an exercise in collision 
+detection and triangulation with verts/lines/faces/objects. 
 
 Ctrl-Left mouse rotates scene
 Ctrl-Right mouse drags scene
@@ -10,5 +10,3 @@ Shift-L will select an edge loop
 
 Spacebar deselects all
 
-
-I also created a branch that includes Python scripting. 
