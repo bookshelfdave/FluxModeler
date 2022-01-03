@@ -1,6 +1,8 @@
 Some of the 3d modeler I was working on in 2010. C++/Qt w/ old school OpenGL. This was mostly an exercise in collision 
 detection and triangulation with verts/lines/faces/objects. 
 
+> It's been years since I've looked at this and doubt that it compiles. 
+
 Ctrl-Left mouse rotates scene
 Ctrl-Right mouse drags scene
 Ctrl-Mousewheel zooms in and out
